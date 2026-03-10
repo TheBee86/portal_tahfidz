@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Kelas - SD Teladan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="min-h-screen bg-cover bg-center bg-no-repeat font-sans" style="background-image: url('bg_login_guru.jpg');">
+    
+    <div class="fixed inset-0 bg-black/70 z-0"></div>
+
+    <div class="relative z-10 p-6 flex flex-col items-center min-h-screen">
+        
+        <header class="text-center mb-10 fade-in">
+            <h1 class="text-3xl font-bold text-white uppercase tracking-widest">Pilih Kelas Siswa</h1>
+            <p class="text-green-400 mt-2 font-medium">SD Teladan Yogyakarta</p>
+        </header>
+
+        <main id="gridKelas" class="w-full max-w-5xl grid grid-cols-2 md:grid-cols-4 gap-4 fade-in" style="animation-delay: 0.2s;">
+        </main>
+
+        <footer class="mt-12 fade-in">
+            <a href="dashboard_guru.html" class="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full backdrop-blur-md transition-all border border-white/20">
+                &larr; Kembali ke Menu Utama
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        const gridKelas = document.getElementById('gridKelas');
+        const tingkat = [1, 2, 3, 4, 5, 6];
+        const paralel = ['A', 'B', 'C', 'D'];
+
+        // Menghasilkan tombol kelas secara otomatis
+        tingkat.forEach(num => {
+            paralel.forEach(char => {
+                const namaKelas = num + char;
+                
+                // Membuat elemen tombol
+                const btn = document.createElement('button');
+                btn.className = "bg-white/10 backdrop-blur-lg py-6 rounded-2xl border border-white/10 text-white text-2xl font-bold hover:bg-green-600/60 hover:border-green-400 transition-all transform hover:scale-105 active:scale-95 shadow-xl";
+                btn.innerText = namaKelas;
+                
+                // Event klik untuk lanjut ke daftar siswa
+                btn.onclick = () => {
+                    sessionStorage.setItem('kelasTerpilih', namaKelas);
+                    window.location.href = "input_tahfidz.html"; // Lanjut ke halaman input
+                };
+
+                gridKelas.appendChild(btn);
+            });
+        });
+    </script>
+</body>
+</html>

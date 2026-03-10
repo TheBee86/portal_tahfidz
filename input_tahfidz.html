@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Progres Siswa - SD Teladan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { background-color: #020617; }
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.4); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .swal2-input-custom {
+            width: 100%; padding: 0.75rem; margin: 0.5rem 0;
+            background: #1e293b !important; border: 1px solid #475569 !important;
+            color: white !important; border-radius: 1rem !important; font-size: 0.875rem;
+        }
+        select option { background: #0f172a; color: white; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-200 font-sans p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="glass-card p-6 rounded-[2.5rem] mb-10 flex flex-col md:flex-row justify-between items-center gap-4 shadow-2xl">
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-black tracking-tighter uppercase italic text-white">INPUT CAPAIAN SISWA</h1>
+                <p class="text-green-400 text-[10px] font-bold tracking-[0.3em] uppercase mt-1">
+                    KELAS: <span id="displayKelas" class="bg-green-500/20 px-4 py-1 rounded-full text-green-300 ml-1">...</span>
+                </p>
+            </div>
+            <button onclick="window.location.href='dashboard_guru.html'" class="bg-slate-800 hover:bg-red-500/20 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-white/10 transition-all">
+                ← KEMBALI
+            </button>
+        </header>
+
+        <div id="daftarSiswa" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+        <footer class="mt-20 text-center text-white/20 text-[9px] tracking-[0.4em] uppercase py-10">
+            &copy; 2026 TB AZMI UMAR FAUZI - PORTAL SD TELADAN
+        </footer>
+    </div>
+
+    <script>
+        // === CONFIGURATION ===
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYjhGaIyjZO9p0UoBXr8-mZ8ppVL_McBol_hBQV__-u_wKfDMR-qxYf9sfpkd_wCHAlw/exec'; 
+        const namaGuru = "Pak Tebe"; 
+
+        // DATABASE LENGKAP 1A - 3D (RINGKASAN UNTUK COPY-PASTE)
+        const databaseSiswa = [
+            // KELAS 1A
+            { nama: "Abdullah Hamim Harimurti", kelas: "1A" }, { nama: "Adiba Shakila Qorri Aina Ahmad", kelas: "1A" }, { nama: "Ahmad Yusuf Danisworo", kelas: "1A" }, { nama: "Almahyra Shaneisha Anindira Isa S", kelas: "1A" }, { nama: "Amanullah Zain", kelas: "1A" }, { nama: "Arkan Anggara Rahmadi", kelas: "1A" }, { nama: "Ashalina Yumnaa Naladhipa Sudrajat", kelas: "1A" }, { nama: "Aska Danish Kurniawan", kelas: "1A" }, { nama: "Aulia Zulfa Muthii'ah", kelas: "1A" }, { nama: "Azka Ananda Ramadhan", kelas: "1A" }, { nama: "Azka Bhumi Ibrahim", kelas: "1A" }, { nama: "Azriel Dhanadipati Alam", kelas: "1A" }, { nama: "Barra Aulian Rafisqy", kelas: "1A" }, { nama: "Cahaya Al Jannah Martanta", kelas: "1A" }, { nama: "Dineshcara Qiancy Fasyin", kelas: "1A" }, { nama: "Dzakiyya Laiba Zyva", kelas: "1A" }, { nama: "Elshanina Alrafica", kelas: "1A" }, { nama: "Kaivan Elvano Bimantoro", kelas: "1A" }, { nama: "Kaleena Ayudhya Ramadhani", kelas: "1A" }, { nama: "Khalisha Fahma Zahida", kelas: "1A" }, { nama: "Kirani Almahyra Shanum", kelas: "1A" }, { nama: "Kuntum Adreena Alesha Senja", kelas: "1A" }, { nama: "Muhammad Arsyad Hamzah", kelas: "1A" }, { nama: "Muhammad Devan Rafandra", kelas: "1A" }, { nama: "Muhammad Gibran Kareem", kelas: "1A" }, { nama: "Muhammad Haykal Latif", kelas: "1A" }, { nama: "Osvaldy Rishad Andriyanto", kelas: "1A" }, { nama: "Rivero Syam Zafran", kelas: "1A" }, { nama: "Shazfa Alrafailah Ahmad", kelas: "1A" }, { nama: "Skyleen Aruna Seiranala Salsabilla", kelas: "1A" },
+            // KELAS 1B
+            { nama: "Abrisam Reynand Putra Mudhita", kelas: "1B" }, { nama: "Aeshaa Mikayla Faradeeva", kelas: "1B" }, { nama: "Agha Ahnaf Arrayyan", kelas: "1B" }, { nama: "Andi Azka Raffasya Rum", kelas: "1B" }, { nama: "Arraya Banyu Manggala Kunadi", kelas: "1B" }, { nama: "Assyifa Shafiyya Linando", kelas: "1B" }, { nama: "Auriga Rheandra Tavarino", kelas: "1B" }, { nama: "Azzam Abdullah Taftazani", kelas: "1B" }, { nama: "Chantika Queen Arsyila", kelas: "1B" }, { nama: "Deara Shahia Anindri", kelas: "1B" }, { nama: "Ersyila Saibuyun Wirson", kelas: "1B" }, { nama: "Freya Safira Yasmin Fitaly", kelas: "1B" }, { nama: "Gading Ghazali", kelas: "1B" }, { nama: "Ganesh Hamizzhafran", kelas: "1B" }, { nama: "Ghassani Zianka Elshanum", kelas: "1B" }, { nama: "Hafid Rabbani", kelas: "1B" }, { nama: "Hafizhah Acitya Saraswati", kelas: "1B" }, { nama: "Haufanhazza Ghaniyandra", kelas: "1B" }, { nama: "Kania Fadila", kelas: "1B" }, { nama: "Kennan El Zafran", kelas: "1B" }, { nama: "Muhammad Ahsan Laksono", kelas: "1B" }, { nama: "Muhammad Kalandra Abdillah Waseso", kelas: "1B" }, { nama: "Muhammad Khaisan Mumtaz", kelas: "1B" }, { nama: "Muhammad Oktaf Addyagani", kelas: "1B" }, { nama: "Muhammad Said Hadyandhika Purwanto", kelas: "1B" }, { nama: "Nesya Anya Zukhrufa", kelas: "1B" }, { nama: "Qiandra Humaira Praditya", kelas: "1B" }, { nama: "Rayhana Al Maheera Ardiansyah", kelas: "1B" }, { nama: "Sarah Mecca Alexandra", kelas: "1B" }, { nama: "Shumaila Shanum Bawono", kelas: "1B" },
+            // KELAS 1C
+            { nama: "Adiba Putri Diandra", kelas: "1C" }, { nama: "Adila Muzzahira Sya'ban", kelas: "1C" }, { nama: "Ahmad Zade Abinuko", kelas: "1C" },  { nama: "Ahmad Haidar Abdurrahman Hadi", kelas: "1C" }, { nama: "A'isyah Inara Saputra", kelas: "1C" }, { nama: "Akira Miqdam Narendra", kelas: "1C" }, { nama: "Alkhalifi Harits Widodo", kelas: "1C" }, { nama: "Anindya Rasika Safira", kelas: "1C" }, { nama: "Aulia Ibrahim Alfarisi", kelas: "1C" }, { nama: "Faraisa Almahyra Hartadi", kelas: "1C" }, { nama: "Giandra Yatrisna Afiano", kelas: "1C" }, { nama: "Itzel Arsyila Delphys", kelas: "1C" }, { nama: "Iza Muhana Hasan", kelas: "1C" }, { nama: "Muzaffar Hamizan Widhiatna", kelas: "1C" }, { nama: "Nadia Syafira", kelas: "1C" }, { nama: "Nararya Widayaka Listyawan", kelas: "1C" }, { nama: "Nayra Mafaza Mukhbita Biantara", kelas: "1C" }, { nama: "Ning Laya Pandanmawar", kelas: "1C" }, { nama: "R. Dirga Danadyaksa", kelas: "1C" }, { nama: "Raefal Kenan Atharrazka Lukitaningrat", kelas: "1C" }, { nama: "Rafif Naufal Byantara", kelas: "1C" }, { nama: "Rania Afsheena Qanita Wahdono", kelas: "1C" }, { nama: "Rayhan Fauzi Baskoro", kelas: "1C" }, { nama: "Razzan Darpa Yowano", kelas: "1C" }, { nama: "Rumaisha Kaheesha Hakim", kelas: "1C" }, { nama: "Sabran Abhimata Endaru", kelas: "1C" }, { nama: "Sabriya Bitumina Kinandari", kelas: "1C" }, { nama: "Seraphine Keeyona Rianto", kelas: "1C" }, { nama: "Zareena Almeera Azkadina Mukhsinun", kelas: "1C" }, { nama: "Zioshaka Artanabil Pradana", kelas: "1C" },
+            // KELAS 1D
+            { nama: "Abidzar Abayomi Al Ghifari", kelas: "1D" }, { nama: "Ahmad Rayhan Adyarizki", kelas: "1D" }, { nama: "Annisa Misaki Al Hakim", kelas: "1D" }, { nama: "Aqilla Mahiska Virendra", kelas: "1D" }, { nama: "Aqlan Haidar Tsaqib", kelas: "1D" }, { nama: "Arcello Radeva Kurniawan", kelas: "1D" }, { nama: "Arvino Nazriel Rashaad Fredian", kelas: "1D" }, { nama: "Ashalina Anisa Khadija", kelas: "1D" }, { nama: "Elif Andarestya Maylafaisa", kelas: "1D" }, { nama: "Gheadhimas Yumna Zaviera", kelas: "1D" }, { nama: "Keyza Alfarisi Rumi", kelas: "1D" }, { nama: "Khalifa Arshaka Setyojati", kelas: "1D" }, { nama: "Khaulah Salma Nabila", kelas: "1D" }, { nama: "Kynan Azkale Rahman", kelas: "1D" }, { nama: "Maheswara Arganta Praditya", kelas: "1D" }, { nama: "Maitreya Sakala Prastiyo", kelas: "1D" }, { nama: "Maiza Almahyra Putri Yudhistira", kelas: "1D" }, { nama: "Muhammad Arniko Ichimoku Mokoku", kelas: "1D" }, { nama: "Muhammad Azzam Giandra", kelas: "1D" }, { nama: "Muhammad Uwais Al Qarni", kelas: "1D" }, { nama: "Muhammad Yahya Al Maliq", kelas: "1D" }, { nama: "Muhammad Zhafran Syathir Wijaya", kelas: "1D" }, { nama: "Nur Alula Zahran Rabbani", kelas: "1D" }, { nama: "Pragnya Grahita Nuraisya", kelas: "1D" }, { nama: "Qanita Zea Kaylila Rafsanjani", kelas: "1D" }, { nama: "Raffasya Azam Faeza Raharjo", kelas: "1D" }, { nama: "Rauffa Yahya Alfatih", kelas: "1D" }, { nama: "Resyakilla Noushafarina Putri Novindra", kelas: "1D" }, { nama: "Syarifah Aisya Hala Farisha", kelas: "1D" }, { nama: "Tsabina Latisya Orlin Fransisco", kelas: "1D" },
+            // KELAS 2A
+            { nama: "Abdullah Isa Sulistiono", kelas: "2A" }, { nama: "Arkan Ghifari Alfarizi Ramadhan", kelas: "2A" }, { nama: "Arsa Bhiru Daniswara", kelas: "2A" }, { nama: "Arshaka Rasendria", kelas: "2A" }, { nama: "Aulian Tyaga Barananta", kelas: "2A" }, { nama: "Azzahra Rizqya Tsany", kelas: "2A" }, { nama: "Banyubiru Adhyasta Mahanipuna", kelas: "2A" }, { nama: "Bestarila Benzita Rachdiwasitta Rachman", kelas: "2A" }, { nama: "Bianca Putri Kinarian", kelas: "2A" }, { nama: "Dimas Ramdhan Nasrullah", kelas: "2A" }, { nama: "Farhan Fayada Ilmi", kelas: "2A" }, { nama: "Felicya Dafina Alka", kelas: "2A" }, { nama: "Gavindra Abimana", kelas: "2A" }, { nama: "Hamid Rasyid Prabawa", kelas: "2A" }, { nama: "Hisham Dinan Ata Algiza", kelas: "2A" }, { nama: "Ibrahim Ali Gaza", kelas: "2A" }, { nama: "Ilmia Acitya Dahayu", kelas: "2A" }, { nama: "Iltizam Husaini Langsa", kelas: "2A" }, { nama: "Kenan Mahija Rupawan", kelas: "2A" }, { nama: "Mazaya Tsania Fauziah", kelas: "2A" }, { nama: "Muhammad Arfan Al Fatih", kelas: "2A" }, { nama: "Rumaisha Nada Malayeka", kelas: "2A" }, { nama: "Samudra Dharma Adiwangsa", kelas: "2A" }, { nama: "Sarah Harharah", kelas: "2A" }, { nama: "Sheeran Latishya Naimatama", kelas: "2A" }, { nama: "Syamil Albidhira Pratisara", kelas: "2A" }, { nama: "Tsaniya Qonita Sambodo", kelas: "2A" },
+            // KELAS 2B
+            { nama: "Adrian Wira Muliawan", kelas: "2B" }, { nama: "Alexander Dhafin Ghifari Shakeil", kelas: "2B" }, { nama: "Alvira Gitania Putri Khariestama", kelas: "2B" }, { nama: "Arinda Satya Wicaksono", kelas: "2B" }, { nama: "Arondra Karna Dion Adriand", kelas: "2B" }, { nama: "Bryan Xavier Al Ghifari", kelas: "2B" }, { nama: "Delano Alvarendra Diody", kelas: "2B" }, { nama: "Feerozah Adeeva Rizta", kelas: "2B" }, { nama: "Firash Ramadhan Aljunnah Irvani", kelas: "2B" }, { nama: "Ibrahim Bagaskoro D. Saksama", kelas: "2B" }, { nama: "Kinanti Armadani", kelas: "2B" }, { nama: "Maulidya Almeera Wilantara", kelas: "2B" }, { nama: "Medina Lituhayu Shaleeha Syahyaman", kelas: "2B" }, { nama: "Muhammad Darius El Shareef Khayruagung", kelas: "2B" }, { nama: "Muhammad Muzakki Al Fatih", kelas: "2B" }, { nama: "Nashira Yumna Almaodhi", kelas: "2B" }, { nama: "Nayazka Ailean Farizky", kelas: "2B" }, { nama: "Nesya Ardelia", kelas: "2B" }, { nama: "Paraduta Bhodrowanto Suryoningrat", kelas: "2B" }, { nama: "Raden Kairupan Abduh Humayun", kelas: "2B" }, { nama: "Raffasya Achmad Rasya", kelas: "2B" }, { nama: "Raina Kayla Alexandra", kelas: "2B" }, { nama: "Ramadhanisa Nur Shahia", kelas: "2B" }, { nama: "Reynand Arka Zavier", kelas: "2B" }, { nama: "Shanum Almeera Wibowo", kelas: "2B" }, { nama: "Umar Syafiq Rabbani", kelas: "2B" }, { nama: "Virendra Gibran Tosca", kelas: "2B" }, { nama: "Zyan Abdul Malik", kelas: "2B" },
+            // KELAS 2C
+            { nama: "Adiba Shakilla Azzahra", kelas: "2C" }, { nama: "Ahmad Fatta As-Sufi", kelas: "2C" }, { nama: "Aksara Pendar Andaru", kelas: "2C" }, { nama: "Alesha Almahyra Jingga", kelas: "2C" }, { nama: "Annasya Nadheera Mecca", kelas: "2C" }, { nama: "Aretha Cantyana Zyan", kelas: "2C" }, { nama: "Arshaka Kenzie Ervito", kelas: "2C" }, { nama: "Artanabil Daniyal Zahran", kelas: "2C" }, { nama: "Azka Amira Rahman", kelas: "2C" }, { nama: "Azrina Zahra Putri Ardiyani", kelas: "2C" }, { nama: "Brian Ramadhan Aditiyanto", kelas: "2C" }, { nama: "Fabian Azka Atharizqy Pamungkas", kelas: "2C" }, { nama: "Giandra Adyatama Susanto", kelas: "2C" }, { nama: "Gibran Radhika Wiratama", kelas: "2C" }, { nama: "Giovanni Kairan Abrisam", kelas: "2C" }, { nama: "Ihda Aiyra Putrirazu", kelas: "2C" }, { nama: "Javas Pandhega Mahfie", kelas: "2C" }, { nama: "Kaivan Kamil Setyawijaya", kelas: "2C" }, { nama: "Kautsar Nafi Al Qarni", kelas: "2C" }, { nama: "Kayra Shahia Ananta", kelas: "2C" }, { nama: "Mezzangga Amartya Atharani", kelas: "2C" }, { nama: "Nuansayang Ada Karindha", kelas: "2C" }, { nama: "Raden Bagus Rajasa Nurrayyan Fawwaz Ronaldo", kelas: "2C" }, { nama: "Rafka Aryaputra", kelas: "2C" }, { nama: "Rayyan Grafika Attaqi", kelas: "2C" }, { nama: "Rr. Nayla Tribhuana Tunggadewi", kelas: "2C" }, { nama: "Savaira Khairani Izzatuniswa", kelas: "2C" },
+            // KELAS 2D
+            { nama: "Adeeva Soca Kurniawan", kelas: "2D" }, { nama: "Adreena Khanza Agmadina Mecca", kelas: "2D" }, { nama: "Albifarzan Bima Hahijary", kelas: "2D" }, { nama: "Almira Hilya Alfathunnisa", kelas: "2D" }, { nama: "Arjuna Kenzo El Azzam", kelas: "2D" }, { nama: "Azkia Soraya Azzahra", kelas: "2D" }, { nama: "Azqiara Shaqeena Adisty", kelas: "2D" }, { nama: "Bingar Samudra Sangkan Pawenang", kelas: "2D" }, { nama: "Bramantya Anhar Danavendra", kelas: "2D" }, { nama: "Febby Victoria", kelas: "2D" }, { nama: "Gathan Devdaniyal Gunawan", kelas: "2D" }, { nama: "Gifagan Rasendria Adnan", kelas: "2D" }, { nama: "Haidar Fasha Arsyanendra", kelas: "2D" }, { nama: "Hamizan Rafif Murwanto", kelas: "2D" }, { nama: "Hanania Sahi Dhieayu", kelas: "2D" }, { nama: "Kayyisa Anindita Maheswari", kelas: "2D" }, { nama: "Keisyafa Arga Azzahra", kelas: "2D" }, { nama: "Kunhiro Zain Mangkunegara Nasution", kelas: "2D" }, { nama: "Muhammad Arzanka Alqahtani", kelas: "2D" }, { nama: "Muhammad Faris Hazim Alghazali", kelas: "2D" }, { nama: "Muhammad Naufal Ghifari Yahya", kelas: "2D" }, { nama: "Rajasa Maheswara Nopa Putra", kelas: "2D" }, { nama: "Razan Uwais Alvarendra", kelas: "2D" }, { nama: "Rr. Zhafira Nidan Qinari", kelas: "2D" }, { nama: "Runako Arsenio Tovani", kelas: "2D" }, { nama: "Sabira Asheeqa Danurdara", kelas: "2D" }, { nama: "Salsabila Delisha Putri", kelas: "2D" }, { nama: "Upanarima", kelas: "2D" },
+            // KELAS 3A
+            { nama: "Adiba Ayunazahra Mahendra", kelas: "3A" }, { nama: "Afthara Yodya Wishaka", kelas: "3A" }, { nama: "Alesha Sofia Latif", kelas: "3A" }, { nama: "Altaff Falah Hamizan Maasi", kelas: "3A" }, { nama: "Alzia Anggun Putri Lesmana", kelas: "3A" }, { nama: "Annisa Almahyra", kelas: "3A" }, { nama: "Arsyila Jehan Naira", kelas: "3A" }, { nama: "Arvino Muhammad Nazril Khalif", kelas: "3A" }, { nama: "Attila Nadhif Iskandar", kelas: "3A" }, { nama: "Azalea Najma Orlin", kelas: "3A" }, { nama: "Barra Khalil Ayubi", kelas: "3A" }, { nama: "Beenatya Adya Martanta", kelas: "3A" }, { nama: "Cataluna Kinarian Bandriananto", kelas: "3A" }, { nama: "Efwan Raffaza Abidzar", kelas: "3A" }, { nama: "Farid Abdillah Anindito", kelas: "3A" }, { nama: "Fatan Divo Laranta", kelas: "3A" }, { nama: "Ghassani Swarnanindya Riawan", kelas: "3A" }, { nama: "Kahiyang Arsyfa Putri", kelas: "3A" }, { nama: "Kieran Sabiraliana Gazala", kelas: "3A" }, { nama: "Myesha Afsheen Adeeva", kelas: "3A" }, { nama: "Nurani Merah Merona", kelas: "3A" }, { nama: "Paundrakarna Adrian", kelas: "3A" }, { nama: "R. Danish Satya Kumarajendra", kelas: "3A" }, { nama: "Restina Hayyu Kinanti", kelas: "3A" }, { nama: "Reynand Gama Alkanzu", kelas: "3A" }, { nama: "Shafaluna Fidelya Hoshi", kelas: "3A" }, { nama: "Yusuf Haidar Fadil Pratama", kelas: "3A" },
+            // KELAS 3B
+            { nama: "Abrisam Reynand Alvarendra", kelas: "3B" }, { nama: "Adam Zaid Mahesvara", kelas: "3B" }, { nama: "Adiratna Kinasih Priscanara", kelas: "3B" }, { nama: "Aghnia Zuhrufa Aulia", kelas: "3B" }, { nama: "Al Meera Shahin Ashalina", kelas: "3B" }, { nama: "Almir Razka Alvaronizam", kelas: "3B" }, { nama: "Almira Jeslyn Chalondra", kelas: "3B" }, { nama: "Aretha Naufa Kartika", kelas: "3B" }, { nama: "Arkana Rafasyaa Darmawan", kelas: "3B" }, { nama: "Arsaka Alindra Pratama", kelas: "3B" }, { nama: "Arsyya Jivi Damario", kelas: "3B" }, { nama: "Atqiya Ashalina Iskandar Alam", kelas: "3B" }, { nama: "Axelle Alatas Bintang Kusuma", kelas: "3B" }, { nama: "Azlan Hamka Wijaya", kelas: "3B" }, { nama: "Azzalea Zalfa Humaira", kelas: "3B" }, { nama: "Ben Khalid Ayubi", kelas: "3B" }, { nama: "Devendra Farzana Ariqin", kelas: "3B" }, { nama: "Dzakiyah Shafaraz Prasetyo", kelas: "3B" }, { nama: "Ghalibi Sandiaga Riawan", kelas: "3B" }, { nama: "Kyna Mecca Avicenna", kelas: "3B" }, { nama: "Medina Nameera Aji Queendra", kelas: "3B" }, { nama: "Mehdi Arafat", kelas: "3B" }, { nama: "Muhammad Wahyu Abidzar", kelas: "3B" }, { nama: "Nafia Nuha Yudhanto", kelas: "3B" }, { nama: "Olivia Aleshaeda Istiawan", kelas: "3B" }, { nama: "Rama Najid Abdillah Munandar", kelas: "3B" }, { nama: "Syadid Alrafaeyza Ahmadi", kelas: "3B" }, { nama: "Syah Fareeza Nabila Ramadani", kelas: "3B" },
+            // KELAS 3C
+            { nama: "Al Kahfi Hadianto", kelas: "3C" }, { nama: "Alyssa Azzahra", kelas: "3C" }, { nama: "Ardana Kaelan Albar", kelas: "3C" }, { nama: "Arsakha Muhammad Adrian", kelas: "3C" }, { nama: "Azni Azarine", kelas: "3C" }, { nama: "Cakrawala Putera Sanjaya", kelas: "3C" }, { nama: "Daffa Abhimata Khatulistiwa", kelas: "3C" }, { nama: "Den Bagus Asta Maheswara", kelas: "3C" }, { nama: "Elvina Arsyfa Salsabila", kelas: "3C" }, { nama: "Faza Ahmad Alfarizqi", kelas: "3C" }, { nama: "Hanief Habibie Oktadio", kelas: "3C" }, { nama: "Hilmi Ammar Ahmad", kelas: "3C" }, { nama: "Jasmine Salsabila Chairunnisa", kelas: "3C" }, { nama: "Keysha Arindra Ramadhani", kelas: "3C" }, { nama: "Kyna Medina Arscylla", kelas: "3C" }, { nama: "Muhammad Dzaky Yudistira", kelas: "3C" }, { nama: "Muhammad Naufal Nur Rasyid", kelas: "3C" }, { nama: "Nadine Zivana Prabowo", kelas: "3C" }, { nama: "Nadria Kinandari Adia", kelas: "3C" }, { nama: "Nafasya Ashima Radisty", kelas: "3C" }, { nama: "Nouman Alaric Rausyanfikri Witoyo", kelas: "3C" }, { nama: "R. Ismail Hidayatullah", kelas: "3C" }, { nama: "Radika Rafi Radiaskoro", kelas: "3C" }, { nama: "Rafasha Shidiq Alfarih", kelas: "3C" }, { nama: "Rania Nindita Pangaribowo", kelas: "3C" }, { nama: "Tisya Dea Ashalina", kelas: "3C" }, { nama: "Yasmeena Shaqueena Alesha", kelas: "3C" },
+            // KELAS 3D
+            { nama: "Aldhino Alfarizki Diody", kelas: "3D" }, { nama: "Alveno Azzam Jatmiko", kelas: "3D" }, { nama: "Ardhana Rakha Dhanurendra", kelas: "3D" }, { nama: "Arsakha Virendra Pratama", kelas: "3D" }, { nama: "Arvand Hanenda Detama", kelas: "3D" }, { nama: "Fahiera Salsabila Chairunnisa", kelas: "3D" }, { nama: "Fazyan Abyaz Arsen", kelas: "3D" }, { nama: "Hafidz Orlando Akbar", kelas: "3D" }, { nama: "Hazira Sauqiya", kelas: "3D" }, { nama: "Inara Ashalina Anindri", kelas: "3D" }, { nama: "Karima Nismara Pratama", kelas: "3D" }, { nama: "Kekira Athaleta Almeera", kelas: "3D" }, { nama: "Ken Luthra Padmanggala", kelas: "3D" }, { nama: "Keyan Amar Ruqee", kelas: "3D" }, { nama: "Luna Mikayla Kusuma", kelas: "3D" }, { nama: "Mikayla Keysha Syaquila Wibowo", kelas: "3D" }, { nama: "Misha Chairunnisa", kelas: "3D" }, { nama: "Muhammad Dirgantara Alnandi Putra", kelas: "3D" }, { nama: "Muhammad Harun Al Rasyid", kelas: "3D" }, { nama: "Muhammad Irfan Fatahillah Azzikri", kelas: "3D" }, { nama: "Muhammad Sultan Hafiz", kelas: "3D" }, { nama: "Nabila Putri", kelas: "3D" }, { nama: "Nada Farhana Zayn", kelas: "3D" }, { nama: "R. Zaid Zeyzan Ombara Nahdi", kelas: "3D" }, { nama: "Raden Ajeng Amira Sophia", kelas: "3D" }, { nama: "Raisya Almahyra Hanifa", kelas: "3D" }, { nama: "Zalfa Naqiyya Mecca", kelas: "3D" }
+        ];
+
+        const daftarSurah = ["Al-Fatihah", "Al-Baqarah", "Ali 'Imran", "An-Nisa'", "Al-Ma'idah", "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawbah", "Yunus", "Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr", "An-Nahl", "Al-Isra'", "Al-Kahf", "Maryam", "Ta-Ha", "Al-Anbiya'", "Al-Hajj", "Al-Mu'minun", "An-Nur", "Al-Furqan", "Asy-Syu'ara'", "An-Naml", "Al-Qasas", "Al-'Ankabut", "Ar-Rum", "Luqman", "As-Sajdah", "Al-Ahzab", "Saba'", "Fatir", "Ya-Sin", "As-Saffat", "Sad", "Az-Zumar", "Ghafir", "Fussilat", "Asy-Syura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah", "Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'ah", "Al-Hadid", "Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah", "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah", "Al-Insan", "Al-Mursalat", "An-Naba'", "An-Nazi'at", "'Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad", "Asy-Syams", "Al-Layl", "Ad-Duha", "Asy-Sharh", "At-Tin", "Al-'Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-'Adiyat", "Al-Qari'ah", "At-Takathur", "Al-'Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"];
+
+        const kelasDipilih = sessionStorage.getItem('kelasTerpilih') || "1A";
+        document.getElementById('displayKelas').innerText = kelasDipilih;
+        const container = document.getElementById('daftarSiswa');
+        const siswaFiltered = databaseSiswa.filter(s => s.kelas === kelasDipilih);
+
+        siswaFiltered.forEach((siswa, index) => {
+            const card = document.createElement('div');
+            card.className = "glass-card p-6 rounded-[2.5rem] flex flex-col gap-5 fade-in shadow-2xl transition-all hover:scale-[1.02]";
+            card.style.animationDelay = (index * 0.05) + "s";
+            card.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-[10px] font-black text-blue-400 border border-blue-500/30 shrink-0">${index + 1}</div>
+                    <span class="text-sm font-black text-white/90 tracking-tight leading-tight">${siswa.nama}</span>
+                </div>
+                <div class="flex flex-wrap gap-2 justify-end mt-2">
+                    <button onclick="inputTilawati('${siswa.nama}')" class="bg-blue-600 hover:bg-blue-500 text-[8px] px-3 py-2.5 rounded-xl font-black uppercase tracking-widest shadow-lg transition-all active:scale-90">Tilawati</button>
+                    <button onclick="inputAlquran('${siswa.nama}')" class="bg-indigo-600 hover:bg-indigo-500 text-[8px] px-3 py-2.5 rounded-xl font-black uppercase tracking-widest shadow-lg transition-all active:scale-90">Al-Qur'an</button>
+                    <button onclick="inputHafalan('${siswa.nama}')" class="bg-green-600 hover:bg-green-500 text-[8px] px-3 py-2.5 rounded-xl font-black uppercase tracking-widest shadow-lg transition-all active:scale-90">Tahfidz</button>
+                    <button onclick="inputCatatan('${siswa.nama}')" class="bg-yellow-600 hover:bg-yellow-500 text-[8px] px-3 py-2.5 rounded-xl font-black uppercase tracking-widest shadow-lg transition-all active:scale-90 text-white">Catatan</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        function kirimKeSheets(payload) {
+            Swal.fire({ title: 'Menyimpan...', background: '#0f172a', color: '#fff', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                Swal.fire({ title: 'BERHASIL!', text: 'Data berhasil diperbarui di Spreadsheet.', icon: 'success', confirmButtonColor: '#16a34a', background: '#0f172a', color: '#fff' });
+            })
+            .catch(error => {
+                Swal.fire({ title: 'ERROR!', text: 'Gagal mengirim data. Cek koneksi.', icon: 'error', background: '#0f172a', color: '#fff' });
+            });
+        }
+
+        // --- FUNGSI CATATAN SISWA ---
+        function inputCatatan(nama) {
+            // Template Statis
+            const pembuka = "Alhamdulillah ananda mampu mengikuti pembelajaran tahfidz dengan sangat baik. ";
+            const penutup = " Mohon pendampingan Bapak dan Ibu agar ananda istiqomah mengaji di rumah.";
+            const limitTotal = 360;
+            // Menghitung sisa karakter yang tersedia untuk input manual guru
+            const sisaKarakter = limitTotal - pembuka.length - penutup.length;
+
+            Swal.fire({
+                title: 'CATATAN PERKEMBANGAN',
+                background: '#0f172a',
+                color: '#fff',
+                html: `
+                    <div class="text-left">
+                        <p class="text-[10px] text-white/40 uppercase tracking-widest mb-1">Nama Siswa:</p>
+                        <p class="text-md font-bold text-white mb-4 border-b border-white/10 pb-2">${nama}</p>
+                        
+                        <label class="text-[9px] text-yellow-400 uppercase font-black tracking-widest">Kualitas Pembelajaran</label>
+                        <select id="kualitas" class="swal2-input-custom">
+                            <option value="sangat baik">Sangat Baik</option>
+                            <option value="baik" selected>Baik</option>
+                            <option value="cukup baik">Cukup Baik</option>
+                        </select>
+
+                        <div class="flex justify-between items-end mt-4">
+                            <label class="text-[9px] text-yellow-400 uppercase font-black tracking-widest">Catatan Khusus</label>
+                            <span id="charCount" class="text-[9px] text-white/30 font-mono">0 / ${sisaKarakter}</span>
+                        </div>
+                        
+                        <textarea id="pesanGuru" 
+                            class="swal2-input-custom h-24" 
+                            maxlength="${sisaKarakter}"
+                            placeholder="Tulis catatan tambahan guru di sini..."
+                            oninput="document.getElementById('charCount').innerText = this.value.length + ' / ${sisaKarakter}'"></textarea>
+                        
+                        <p class="text-[8px] text-white/20 italic mt-2 leading-tight">
+                            *Total pesan (termasuk template) dibatasi maksimal 360 karakter.
+                        </p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'SIMPAN CATATAN',
+                confirmButtonColor: '#ca8a04',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const kualitas = document.getElementById('kualitas').value;
+                    const pesanGuru = document.getElementById('pesanGuru').value;
+                    
+                    // Menggabungkan menjadi kalimat utuh sesuai format Pak Tebe
+                    const catatanLengkap = `Alhamdulillah ananda mampu mengikuti pembelajaran tahfidz dengan ${kualitas}. ${pesanGuru} Mohon pendampingan Bapak dan Ibu agar ananda istiqomah mengaji di rumah.`;
+
+                    // Validasi akhir keamanan
+                    if (catatanLengkap.length > 360) {
+                        Swal.fire('Terlalu Panjang', 'Maaf, total catatan melebihi 360 karakter.', 'error');
+                        return;
+                    }
+
+                    kirimKeSheets({
+                        guru: namaGuru,
+                        namaSiswa: nama,
+                        kelas: kelasDipilih,
+                        jenis: "Catatan",
+                        catatan: catatanLengkap
+                    });
+                }
+            });
+        }
+
+        function inputTilawati(nama) {
+            Swal.fire({
+                title: 'INPUT TILAWATI', background: '#0f172a', color: '#fff',
+                html: `<select id="jilid" class="swal2-input-custom"><option value="" disabled selected>Pilih Jilid</option>${[1,2,3,4,5,6].map(j => `<option value="${j}">Jilid ${j}</option>`).join('')}</select>
+                       <select id="halaman" class="swal2-input-custom"><option value="" disabled selected>Pilih Halaman</option>${Array.from({length: 44}, (_, i) => `<option value="${i+1}">Halaman ${i+1}</option>`).join('')}</select>
+                       <select id="predikat" class="swal2-input-custom"><option value="" disabled selected>Predikat</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>`,
+                confirmButtonText: 'SIMPAN', showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    kirimKeSheets({
+                        guru: namaGuru, namaSiswa: nama, kelas: kelasDipilih, jenis: "Tilawati",
+                        jilid: document.getElementById('jilid').value, hal: document.getElementById('halaman').value, nilai: document.getElementById('predikat').value
+                    });
+                }
+            });
+        }
+
+        function inputAlquran(nama) {
+            Swal.fire({
+                title: 'INPUT AL-QUR\'AN', background: '#0f172a', color: '#fff',
+                html: `<select id="juz" class="swal2-input-custom"><option value="" disabled selected>Pilih Juz</option>${Array.from({length: 30}, (_, i) => `<option value="${i+1}">Juz ${i+1}</option>`).join('')}</select>
+                       <select id="surah" class="swal2-input-custom"><option value="" disabled selected>Pilih Surah</option>${daftarSurah.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
+                       <input id="ayat" class="swal2-input-custom" placeholder="Tulis Ayat (Manual)">
+                       <select id="predikat_q" class="swal2-input-custom"><option value="" disabled selected>Predikat</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>`,
+                confirmButtonText: 'SIMPAN', showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    kirimKeSheets({
+                        guru: namaGuru, namaSiswa: nama, kelas: kelasDipilih, jenis: "Alquran",
+                        juz: document.getElementById('juz').value, surah: document.getElementById('surah').value, ayat: document.getElementById('ayat').value, nilai: document.getElementById('predikat_q').value
+                    });
+                }
+            });
+        }
+
+        function inputHafalan(nama) {
+            Swal.fire({
+                title: 'INPUT TAHFIDZ', background: '#0f172a', color: '#fff',
+                html: `<select id="surah_t" class="swal2-input-custom"><option value="" disabled selected>Pilih Surah</option>${daftarSurah.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
+                       <input id="ayat_t" class="swal2-input-custom" placeholder="Tulis Ayat (Manual)">
+                       <select id="predikat_t" class="swal2-input-custom"><option value="" disabled selected>Predikat</option><option value="A">A (Sangat Lancar)</option><option value="B">B (Lancar)</option><option value="C">C (Cukup)</option><option value="D">D (Murojaah)</option></select>`,
+                confirmButtonText: 'SIMPAN', showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    kirimKeSheets({
+                        guru: namaGuru, namaSiswa: nama, kelas: kelasDipilih, jenis: "Tahfidz",
+                        surah: document.getElementById('surah_t').value, ayat: document.getElementById('ayat_t').value, nilai: document.getElementById('predikat_t').value
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

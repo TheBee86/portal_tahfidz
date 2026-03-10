@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Tahfidz - SD Teladan Yogyakarta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSS Tambahan untuk Animasi Memudar (Splash Screen) */
+        .fade-out {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease-out, visibility 1s ease-out;
+        }
+
+        /* Efek muncul halus untuk konten utama */
+        .smooth-entry {
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-sans overflow-hidden">
+    <div id="openingOverlay" class="fixed inset-0 z-[100] bg-white flex items-center justify-center">
+        <video id="openingVideo" class="w-full h-full object-cover" autoplay muted playsinline>
+            <source src="logo_opening.mp4" type="video/mp4">
+            Browser Anda tidak mendukung tag video.
+        </video>
+    </div>
+    <main id="mainContent" class="hidden opacity-0 transition-opacity duration-1000 relative min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('foto_sekolah.jpg');">
+        
+        <div class="absolute inset-0 bg-black/30 z-0"></div>
+
+        <div class="relative z-10 flex flex-col min-h-screen">
+            <div class="flex-grow flex items-center justify-center p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
+                    
+                    <div class="bg-white/20 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-white/30 border-t-8 border-t-green-600 hover:scale-105 transition-transform relative">
+                        <div class="text-5xl mb-6">👨‍🏫</div>
+                        <h2 class="text-2xl font-bold text-white shadow-sm">Portal Guru</h2>
+                        <p class="text-white/90 mt-2 mb-8 leading-relaxed">Input setoran hafalan, ziyadah, dan murojaah siswa secara harian.</p>
+                        
+                        <a href="login.html?role=guru" class="block w-full bg-green-600/80 hover:bg-green-600 text-white text-center py-4 rounded-xl font-bold shadow-lg transition-colors backdrop-blur-sm">
+                            Masuk Portal Guru
+                        </a>
+                    </div>
+
+                    <div class="bg-white/20 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-white/30 border-t-8 border-t-blue-500 hover:scale-105 transition-transform relative">
+                        <div class="text-5xl mb-6">👪</div>
+                        <h2 class="text-2xl font-bold text-white shadow-sm">Portal Wali</h2>
+                        <p class="text-white/90 mt-2 mb-8 leading-relaxed">Pantau perkembangan tahfidz putra-putri Anda kapan saja.</p>
+                        
+                        <a href="login_wali.html" class="block w-full bg-blue-600/80 hover:bg-blue-600 text-white text-center py-4 rounded-xl font-bold shadow-lg transition-colors backdrop-blur-sm">
+                            Cek Progres Siswa
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <footer class="py-6 text-center text-white/60 text-sm tracking-widest uppercase">
+                &copy; 2026 TB Azmi Umar Fauzi
+            </footer>
+        </div>
+    </main>
+    <script>
+       const overlay = document.getElementById('openingOverlay');
+    const mainContent = document.getElementById('mainContent');
+    const body = document.body;
+
+    function showMainPage() {
+        mainContent.classList.remove('hidden');
+        mainContent.style.opacity = "1"; // Pastikan opacity terlihat
+        mainContent.classList.add('smooth-entry');
+        body.classList.remove('overflow-hidden');
+        overlay.style.display = 'none';
+        
+        // --- TAMBAHAN: CEK STATUS LOGIN OTOMATIS ---
+        // Jika ustadz sudah login, arahkan ke dashboard guru saat klik portal guru
+        // Jika wali sudah login, arahkan ke dashboard wali saat klik portal wali
+        const guruLogin = sessionStorage.getItem('guruLogin');
+        const waliLogin = sessionStorage.getItem('userLogin');
+
+        if (guruLogin) {
+            console.log("Status: Guru Terdeteksi Login");
+            // Opsional: Pak Tebe bisa mengubah link tombol secara dinamis
+        }
+        if (waliLogin) {
+            console.log("Status: Wali Murid Terdeteksi Login");
+        }
+    }
+
+    // Fungsi Logout Global (Bisa dipanggil dari console atau tombol logout)
+    function logoutAll() {
+        sessionStorage.clear();
+        location.reload();
+    }
+
+    // Logika Splash Screen Video
+    if (sessionStorage.getItem('videoPlayed')) {
+        showMainPage();
+    } else {
+        const video = document.getElementById('openingVideo');
+        
+        // Jika video gagal load (file tidak ketemu), langsung ke halaman utama
+        video.onerror = function() {
+            showMainPage();
+        };
+
+        video.onended = function() {
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                showMainPage();
+                sessionStorage.setItem('videoPlayed', 'true');
+            }, 300);
+        };
+    }
+</script>
+    </body>
+</html>

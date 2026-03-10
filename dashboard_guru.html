@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lembar Tugas Guru - SD Teladan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-image: url('bg_guru.jpg'); /* Pastikan file gambar ada di folder yang sama */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .glass-overlay {
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .card-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+    
+    <div class="absolute inset-0 glass-overlay z-0"></div>
+
+    <div class="relative z-10 w-full max-w-4xl">
+        <div class="flex justify-between items-start mb-12">
+            <div class="text-white">
+                <h1 class="text-4xl font-black tracking-tighter uppercase italic">Lembar Tugas Guru</h1>
+                <p class="text-green-400 font-bold text-sm tracking-widest uppercase mt-1">SD Teladan Yogyakarta</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20">
+                <p class="text-white/50 text-[10px] uppercase font-bold">Ustadz/ah:</p>
+                <p class="text-white font-bold text-sm">Pak Tebe</p>
+            </div>
+        </div>
+
+        <div class="flex justify-center">
+            <div class="card-glass p-10 rounded-[3rem] text-center max-w-lg w-full shadow-2xl transition-transform hover:scale-[1.02]">
+                <div class="mb-6 flex justify-center">
+                    <div class="flex gap-2">
+                        <span class="text-4xl">📖</span>
+                        <span class="text-4xl">🕌</span>
+                        <span class="text-4xl">💎</span>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-black text-white uppercase mb-2">Panel Progres Siswa</h2>
+                <p class="text-white/60 text-sm mb-8 leading-relaxed">
+                    Input data capaian Tilawati, progres bacaan Al-Qur'an harian, dan setoran hafalan Tahfidz (Ziyadah & Murojaah) dalam satu panel praktis.
+                </p>
+                
+                <button onclick="window.location.href='pilih_kelas.html'" 
+                    class="w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-2xl shadow-lg shadow-green-900/40 transition-all active:scale-95 uppercase tracking-widest">
+                    Mulai Input Progres →
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center">
+            <button onclick="window.location.href='index.html'" class="text-white/30 hover:text-white text-[10px] font-bold uppercase tracking-[0.4em] transition-colors">
+                Keluar Aplikasi
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

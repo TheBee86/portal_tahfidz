@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Wali Murid - SD Teladan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .btn-kembali {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-kembali:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+        /* Memperbaiki background agar penuh dan tidak belang di bawah */
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Mencegah scroll yang bikin belang */
+        }
+        
+        .bg-full {
+            background-image: url('bg_login_wali.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Overlay gelap merata ke seluruh layar */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.35); /* Slate-950 transparan */
+            z-index: 1;
+        }
+
+        /* Kotak Login Transparan Mewah (Glassmorphism) */
+        .glass-login { 
+    position: relative;
+    z-index: 10;
+    /* Ganti 0.1 di bawah ini untuk mengatur kepekatan putihnya */
+    background: rgba(255, 255, 255, 0.05); 
+    
+    /* Ganti 25px di bawah ini untuk mengatur tingkat buram kacanya */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(25px);
+    
+    /* Garis pinggir tipis agar terlihat seperti potongan kaca */
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+        /* Memperhalus tampilan input */
+        .input-custom {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.3s ease;
+        }
+        .input-custom:focus {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-full">
+        <div class="overlay"></div>
+
+        <div class="max-w-md w-full glass-login p-10 rounded-[3rem] mx-4">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-black italic tracking-tighter text-white uppercase">PORTAL WALI</h1>
+                <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.4em] mt-1">SD Teladan Yogyakarta</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="text-[10px] font-black text-white/50 uppercase ml-2 tracking-widest">Nama Lengkap Anak</label>
+                    <input type="text" id="namaSiswa" required 
+                        class="input-custom w-full rounded-2xl p-4 text-white mt-2 outline-none" 
+                        placeholder="Contoh: Imelda Nurul Qolby">
+                </div>
+              <div class="relative">
+    <label class="text-[10px] font-black text-white/50 uppercase ml-2 tracking-widest">Password (Tgl Lahir)</label>
+    <div class="relative mt-2">
+        <input type="password" id="passSiswa" required 
+            class="input-custom w-full rounded-2xl p-4 pr-12 text-white outline-none" 
+            placeholder="Format: DDMMYYYY">
+        
+        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-all">
+            <i id="eyeIcon" class="fa-solid fa-eye"></i>
+        </button>
+    </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest mt-6">
+                    MASUK & CEK PROGRES
+                </button>
+            </form>
+            <div class="mt-10 text-center space-y-4">
+    <a href="index.html" class="btn-kembali">
+        <span>&larr;</span> KEMBALI KE HALAMAN UTAMA
+    </a>
+    
+    <p class="text-[8px] text-white/20 tracking-[0.3em] font-bold uppercase">
+        &copy; 2026 TB AZMI UMAR FAUZI
+    </p>
+</div>
+    <script>
+        // DATABASE SISWA KELAS 1A - SD TELADAN YOGYAKARTA
+        const dataSiswa = [
+            { nama: "Abdullah Hamim Harimurti", kelas: "1A", tglLahir: "14072019" },
+            { nama: "Adiba Shakila Qorri Aina Ahmad", kelas: "1A", tglLahir: "10022019" },
+            { nama: "Ahmad Yusuf Danisworo", kelas: "1A", tglLahir: "11122016" },
+            { nama: "Almahyra Shaneisha Anindira Isa S", kelas: "1A", tglLahir: "22062019" },
+            { nama: "Amanullah Zain", kelas: "1A", tglLahir: "02052019" },
+            { nama: "Arkan Anggara Rahmadi", kelas: "1A", tglLahir: "06032018" },
+            { nama: "Ashalina Yumnaa Naladhipa Sudrajat", kelas: "1A", tglLahir: "05092018" },
+            { nama: "Aska Danish Kurniawan", kelas: "1A", tglLahir: "19122018" },
+            { nama: "Aulia Zulfa Muthii'ah", kelas: "1A", tglLahir: "30072018" },
+            { nama: "Azka Ananda Ramadhan", kelas: "1A", tglLahir: "12062018" },
+            { nama: "Azka Bhumi Ibrahim", kelas: "1A", tglLahir: "06072018" },
+            { nama: "Azriel Dhanadipati Alam", kelas: "1A", tglLahir: "26042019" },
+            { nama: "Barra Aulian Rafisqy", kelas: "1A", tglLahir: "31122018" },
+            { nama: "Cahaya Al Jannah Martanta", kelas: "1A", tglLahir: "07022019" },
+            { nama: "Dineshcara Qiancy Fasyin", kelas: "1A", tglLahir: "16042019" },
+            { nama: "Dzakiyya Laiba Zyva", kelas: "1A", tglLahir: "29072018" },
+            { nama: "Elshanina Alrafica", kelas: "1A", tglLahir: "18032019" },
+            { nama: "Kaivan Elvano Bimantoro", kelas: "1A", tglLahir: "09072019" },
+            { nama: "Kaleena Ayudhya Ramadhani", kelas: "1A", tglLahir: "13062018" },
+            { nama: "Khalisha Fahma Zahida", kelas: "1A", tglLahir: "13112018" },
+            { nama: "Kirani Almahyra Shanum", kelas: "1A", tglLahir: "24032018" },
+            { nama: "Kuntum Adreena Alesha Senja", kelas: "1A", tglLahir: "09032019" },
+            { nama: "Muhammad Arsyad Hamzah", kelas: "1A", tglLahir: "10022018" },
+            { nama: "Muhammad Devan Rafandra", kelas: "1A", tglLahir: "20102018" },
+            { nama: "Muhammad Gibran Kareem", kelas: "1A", tglLahir: "27102018" },
+            { nama: "Muhammad Haykal Latif", kelas: "1A", tglLahir: "05112018" },
+            { nama: "Osvaldy Rishad Andriyanto", kelas: "1A", tglLahir: "29052018" },
+            { nama: "Rivero Syam Zafran", kelas: "1A", tglLahir: "03092018" },
+            { nama: "Shazfa Alrafailah Ahmadi", kelas: "1A", tglLahir: "06022019" },
+            { nama: "Skyleen Aruna Seiranala Salsabilla", kelas: "1A", tglLahir: "16032019" }
+        ];
+// DATABASE SISWA KELAS 1B - SD TELADAN YOGYAKARTA
+const dataSiswa1B = [
+    { nama: "Abrisam Reynand Putra Mudhita", kelas: "1B", tglLahir: "17102017" },
+    { nama: "Aeshaa Mikayla Faradeeva", kelas: "1B", tglLahir: "06062018" },
+    { nama: "Agha Ahnaf Arrayyan", kelas: "1B", tglLahir: "15082018" },
+    { nama: "Andi Azka Raffasya Rum", kelas: "1B", tglLahir: "14062019" },
+    { nama: "Arraya Banyu Manggala Kunadi", kelas: "1B", tglLahir: "19052018" },
+    { nama: "Assyifa Shafiyya Linando", kelas: "1B", tglLahir: "13032018" },
+    { nama: "Auriga Rheandra Tavarino", kelas: "1B", tglLahir: "05072019" },
+    { nama: "Azzam Abdullah Taftazani", kelas: "1B", tglLahir: "21062018" },
+    { nama: "Chantika Queen Arsyila", kelas: "1B", tglLahir: "12082018" },
+    { nama: "Deara Shahia Anindri", kelas: "1B", tglLahir: "25062019" },
+    { nama: "Ersyila Saibuyun Wirson", kelas: "1B", tglLahir: "30102018" },
+    { nama: "Freya Safira Yasmin Fitaly", kelas: "1B", tglLahir: "17072018" },
+    { nama: "Gading Ghazali", kelas: "1B", tglLahir: "20042019" },
+    { nama: "Ganesh Hamizzhafran", kelas: "1B", tglLahir: "21122018" },
+    { nama: "Ghassani Zianka Elshanum", kelas: "1B", tglLahir: "07102018" },
+    { nama: "Hafid Rabbani", kelas: "1B", tglLahir: "27082018" },
+    { nama: "Hafizhah Acitya Saraswati", kelas: "1B", tglLahir: "21112018" },
+    { nama: "Haufanhazza Ghaniyandra", kelas: "1B", tglLahir: "19012019" },
+    { nama: "Kania Fadila", kelas: "1B", tglLahir: "09092018" },
+    { nama: "Kennan El Zafran", kelas: "1B", tglLahir: "15042019" },
+    { nama: "Muhammad Ahsan Laksono", kelas: "1B", tglLahir: "05042019" },
+    { nama: "Muhammad Kalandra Abdillah Waseso", kelas: "1B", tglLahir: "24072019" },
+    { nama: "Muhammad Khaisan Mumtaz", kelas: "1B", tglLahir: "27042018" },
+    { nama: "Muhammad Oktaf Addyagani", kelas: "1B", tglLahir: "21102017" },
+    { nama: "Muhammad Said Hadyandhika Purwanto", kelas: "1B", tglLahir: "14102018" },
+    { nama: "Nesya Anya Zukhrufa", kelas: "1B", tglLahir: "10082018" },
+    { nama: "Qiandra Humaira Praditya", kelas: "1B", tglLahir: "30072019" },
+    { nama: "Rayhana Al Maheera Ardiansyah", kelas: "1B", tglLahir: "14072018" },
+    { nama: "Sarah Mecca Alexandra", kelas: "1B", tglLahir: "12092018" },
+    { nama: "Shumaila Shanum Bawono", kelas: "1B", tglLahir: "07022019" }
+];
+// DATABASE SISWA KELAS 1C - SD TELADAN YOGYAKARTA
+const dataSiswa1C = [
+    { nama: "Adiba Putri Diandra", kelas: "1C", tglLahir: "25062019" },
+    { nama: "Adila Muzzahira Sya'ban", kelas: "1C", tglLahir: "17042018" },
+    { nama: "Ahmad Zade Abinuko", kelas: "1C", tglLahir: "28042019" },
+    { nama: "Ahmad Haidar Abdurrahman Hadi", kelas: "1C", tglLahir: "18122018" },
+    { nama: "A'isyah Inara Saputra", kelas: "1C", tglLahir: "04042018" },
+    { nama: "Akira Miqdam Narendra", kelas: "1C", tglLahir: "04072018" },
+    { nama: "Alkhalifi Harits Widodo", kelas: "1C", tglLahir: "01032018" },
+    { nama: "Anindya Rasika Safira", kelas: "1C", tglLahir: "13022019" },
+    { nama: "Aulia Ibrahim Alfarisi", kelas: "1C", tglLahir: "24012018" },
+    { nama: "Faraisa Almahyra Hartadi", kelas: "1C", tglLahir: "03012019" },
+    { nama: "Giandra Yatrisna Afiano", kelas: "1C", tglLahir: "22082018" },
+    { nama: "Itzel Arsyila Delphys", kelas: "1C", tglLahir: "20072019" },
+    { nama: "Iza Muhana Hasan", kelas: "1C", tglLahir: "22072018" },
+    { nama: "Muzaffar Hamizan Widhiatna", kelas: "1C", tglLahir: "03062017" },
+    { nama: "Nadia Syafira", kelas: "1C", tglLahir: "25052019" },
+    { nama: "Nararya Widayaka Listyawan", kelas: "1C", tglLahir: "04012019" },
+    { nama: "Nayra Mafaza Mukhbita Biantara", kelas: "1C", tglLahir: "06022019" },
+    { nama: "Ning Laya Pandanmawar", kelas: "1C", tglLahir: "21092018" },
+    { nama: "R. Dirga Danadyaksa", kelas: "1C", tglLahir: "30092017" },
+    { nama: "Raefal Kenan Atharrazka Lukitaningrat", kelas: "1C", tglLahir: "18122018" },
+    { nama: "Rafif Naufal Byantara", kelas: "1C", tglLahir: "09062019" },
+    { nama: "Rania Afsheena Qanita Wahdono", kelas: "1C", tglLahir: "08102018" },
+    { nama: "Rayhan Fauzi Baskoro", kelas: "1C", tglLahir: "27062018" },
+    { nama: "Razzan Darpa Yowano", kelas: "1C", tglLahir: "16122017" },
+    { nama: "Rumaisha Kaheesha Hakim", kelas: "1C", tglLahir: "01072019" },
+    { nama: "Sabran Abhimata Endaru", kelas: "1C", tglLahir: "19062018" },
+    { nama: "Sabriya Bitumina Kinandari", kelas: "1C", tglLahir: "19032019" },
+    { nama: "Seraphine Keeyona Rianto", kelas: "1C", tglLahir: "18052019" },
+    { nama: "Zareena Almeera Azkadina Mukhsinun", kelas: "1C", tglLahir: "28122018" },
+    { nama: "Zioshaka Artanabil Pradana", kelas: "1C", tglLahir: "02092018" }
+];
+// DATABASE SISWA KELAS 1D - SD TELADAN YOGYAKARTA
+const dataSiswa1D = [
+    { nama: "Abidzar Abayomi Al Ghifari", kelas: "1D", tglLahir: "22052019" },
+    { nama: "Ahmad Rayhan Adyarizki", kelas: "1D", tglLahir: "28082018" },
+    { nama: "Annisa Misaki Al Hakim", kelas: "1D", tglLahir: "12072019" },
+    { nama: "Aqilla Mahiska Virendra", kelas: "1D", tglLahir: "21032019" },
+    { nama: "Aqlan Haidar Tsaqib", kelas: "1D", tglLahir: "11052018" },
+    { nama: "Arcello Radeva Kurniawan", kelas: "1D", tglLahir: "02082019" },
+    { nama: "Arvino Nazriel Rashaad Fredian", kelas: "1D", tglLahir: "04012019" },
+    { nama: "Ashalina Anisa Khadija", kelas: "1D", tglLahir: "11102017" },
+    { nama: "Elif Andarestya Maylafaisa", kelas: "1D", tglLahir: "28052018" },
+    { nama: "Gheadhimas Yumna Zaviera", kelas: "1D", tglLahir: "14052019" },
+    { nama: "Keyza Alfarisi Rumi", kelas: "1D", tglLahir: "17082018" },
+    { nama: "Khalifa Arshaka Setyojati", kelas: "1D", tglLahir: "01062018" },
+    { nama: "Khaulah Salma Nabila", kelas: "1D", tglLahir: "04082018" },
+    { nama: "Kynan Azkale Rahman", kelas: "1D", tglLahir: "20032019" },
+    { nama: "Maheswara Arganta Praditya", kelas: "1D", tglLahir: "23112018" },
+    { nama: "Maitreya Sakala Prastiyo", kelas: "1D", tglLahir: "09012019" },
+    { nama: "Maiza Almahyra Putri Yudhistira", kelas: "1D", tglLahir: "25092018" },
+    { nama: "Muhammad Arniko Ichimoku Mokoku", kelas: "1D", tglLahir: "26062018" },
+    { nama: "Muhammad Azzam Giandra", kelas: "1D", tglLahir: "12012019" },
+    { nama: "Muhammad Uwais Al Qarni", kelas: "1D", tglLahir: "09102018" },
+    { nama: "Muhammad Yahya Al Maliq", kelas: "1D", tglLahir: "08042019" },
+    { nama: "Muhammad Zhafran Syathir Wijaya", kelas: "1D", tglLahir: "30052019" },
+    { nama: "Nur Alula Zahran Rabbani", kelas: "1D", tglLahir: "28102018" },
+    { nama: "Pragnya Grahita Nuraisya", kelas: "1D", tglLahir: "26102018" },
+    { nama: "Qanita Zea Kaylila Rafsanjani", kelas: "1D", tglLahir: "13082018" },
+    { nama: "Raffasya Azam Faeza Raharjo", kelas: "1D", tglLahir: "01062019" },
+    { nama: "Rauffa Yahya Alfatih", kelas: "1D", tglLahir: "11012019" },
+    { nama: "Resyakilla Noushafarina Putri Novindra", kelas: "1D", tglLahir: "07092018" },
+    { nama: "Syarifah Aisya Hala Farisha", kelas: "1D", tglLahir: "06072018" },
+    { nama: "Tsabina Latisya Orlin Fransisco", kelas: "1D", tglLahir: "11072019" }
+];
+// DATABASE SISWA KELAS 2A - SD TELADAN YOGYAKARTA
+const dataSiswa2A = [
+    { nama: "Abdullah Isa Sulistiono", kelas: "2A", tglLahir: "10052018" },
+    { nama: "Arkan Ghifari Alfarizi Ramadhan", kelas: "2A", tglLahir: "15062017" },
+    { nama: "Arsa Bhiru Daniswara", kelas: "2A", tglLahir: "07022018" },
+    { nama: "Arshaka Rasendria", kelas: "2A", tglLahir: "08032017" },
+    { nama: "Aulian Tyaga Barananta", kelas: "2A", tglLahir: "01022018" },
+    { nama: "Azzahra Rizqya Tsany", kelas: "2A", tglLahir: "18012018" },
+    { nama: "Banyubiru Adhyasta Mahanipuna", kelas: "2A", tglLahir: "13012017" },
+    { nama: "Bestarila Benzita Rachdiwasitta Rachman", kelas: "2A", tglLahir: "16022018" },
+    { nama: "Bianca Putri Kinarian", kelas: "2A", tglLahir: "29052017" },
+    { nama: "Dimas Ramdhan Nasrullah", kelas: "2A", tglLahir: "06062017" },
+    { nama: "Farhan Fayada Ilmi", kelas: "2A", tglLahir: "12112017" },
+    { nama: "Felicya Dafina Alka", kelas: "2A", tglLahir: "24072017" },
+    { nama: "Gavindra Abimana", kelas: "2A", tglLahir: "29072018" },
+    { nama: "Hamid Rasyid Prabawa", kelas: "2A", tglLahir: "14092017" },
+    { nama: "Hisham Dinan Ata Algiza", kelas: "2A", tglLahir: "06072018" },
+    { nama: "Ibrahim Ali Gaza", kelas: "2A", tglLahir: "28102017" },
+    { nama: "Ilmia Acitya Dahayu", kelas: "2A", tglLahir: "09052017" },
+    { nama: "Iltizam Husaini Langsa", kelas: "2A", tglLahir: "27122017" },
+    { nama: "Kenan Mahija Rupawan", kelas: "2A", tglLahir: "08052017" },
+    { nama: "Mazaya Tsania Fauziah", kelas: "2A", tglLahir: "21032018" },
+    { nama: "Muhammad Arfan Al Fatih", kelas: "2A", tglLahir: "20012018" },
+    { nama: "Rumaisha Nada Malayeka", kelas: "2A", tglLahir: "10042018" },
+    { nama: "Samudra Dharma Adiwangsa", kelas: "2A", tglLahir: "26022018" },
+    { nama: "Sarah Harharah", kelas: "2A", tglLahir: "23052018" },
+    { nama: "Sheeran Latishya Naimatama", kelas: "2A", tglLahir: "05052017" },
+    { nama: "Syamil Albidhira Pratisara", kelas: "2A", tglLahir: "14072018" },
+    { nama: "Tsaniya Qonita Sambodo", kelas: "2A", tglLahir: "15122017" }
+];
+// DATABASE SISWA KELAS 2B - SD TELADAN YOGYAKARTA
+const dataSiswa2B = [
+    { nama: "Adrian Wira Muliawan", kelas: "2B", tglLahir: "02122016" },
+    { nama: "Alexander Dhafin Ghifari Shakeil", kelas: "2B", tglLahir: "26032018" },
+    { nama: "Alvira Gitania Putri Khariestama", kelas: "2B", tglLahir: "30082017" },
+    { nama: "Arinda Satya Wicaksono", kelas: "2B", tglLahir: "24032018" },
+    { nama: "Arondra Karna Dion Adriand", kelas: "2B", tglLahir: "28072019" },
+    { nama: "Bryan Xavier Al Ghifari", kelas: "2B", tglLahir: "11062018" },
+    { nama: "Delano Alvarendra Diody", kelas: "2B", tglLahir: "29072018" },
+    { nama: "Feerozah Adeeva Rizta", kelas: "2B", tglLahir: "01092018" },
+    { nama: "Firash Ramadhan Aljunnah Irvani", kelas: "2B", tglLahir: "23052018" },
+    { nama: "Ibrahim Bagaskoro D. Saksama", kelas: "2B", tglLahir: "02052017" },
+    { nama: "Kinanti Armadani", kelas: "2B", tglLahir: "22072018" },
+    { nama: "Maulidya Almeera Wilantara", kelas: "2B", tglLahir: "30112017" },
+    { nama: "Medina Lituhayu Shaleeha Syahyaman", kelas: "2B", tglLahir: "02102017" },
+    { nama: "Muhammad Darius El Shareef Khayruagung", kelas: "2B", tglLahir: "28122016" },
+    { nama: "Muhammad Muzakki Al Fatih", kelas: "2B", tglLahir: "01052018" },
+    { nama: "Nashira Yumna Almaodhi", kelas: "2B", tglLahir: "29112017" },
+    { nama: "Nayazka Ailean Farizky", kelas: "2B", tglLahir: "26092017" },
+    { nama: "Nesya Ardelia", kelas: "2B", tglLahir: "16112017" },
+    { nama: "Paraduta Bhodrowanto Suryoningrat", kelas: "2B", tglLahir: "30092017" },
+    { nama: "Raden Kairupan Abduh Humayun", kelas: "2B", tglLahir: "13032018" },
+    { nama: "Raffasya Achmad Rasya", kelas: "2B", tglLahir: "12032017" },
+    { nama: "Raina Kayla Alexandra", kelas: "2B", tglLahir: "12092018" },
+    { nama: "Ramadhanisa Nur Shahia", kelas: "2B", tglLahir: "27052018" },
+    { nama: "Reynand Arka Zavier", kelas: "2B", tglLahir: "10062017" },
+    { nama: "Shanum Almeera Wibowo", kelas: "2B", tglLahir: "10112017" },
+    { nama: "Umar Syafiq Rabbani", kelas: "2B", tglLahir: "27092017" },
+    { nama: "Virendra Gibran Tosca", kelas: "2B", tglLahir: "14012017" },
+    { nama: "Zyan Abdul Malik", kelas: "2B", tglLahir: "04032018" }
+];
+// DATABASE SISWA KELAS 2C - SD TELADAN YOGYAKARTA
+const dataSiswa2C = [
+    { nama: "Adiba Shakilla Azzahra", kelas: "2C", tglLahir: "13022018" },
+    { nama: "Ahmad Fatta As-Sufi", kelas: "2C", tglLahir: "18102017" },
+    { nama: "Aksara Pendar Andaru", kelas: "2C", tglLahir: "17102017" },
+    { nama: "Alesha Almahyra Jingga", kelas: "2C", tglLahir: "16092017" },
+    { nama: "Annasya Nadheera Mecca", kelas: "2C", tglLahir: "30122017" },
+    { nama: "Aretha Cantyana Zyan", kelas: "2C", tglLahir: "16122017" },
+    { nama: "Arshaka Kenzie Ervito", kelas: "2C", tglLahir: "08052017" },
+    { nama: "Artanabil Daniyal Zahran", kelas: "2C", tglLahir: "07062017" },
+    { nama: "Azka Amira Rahman", kelas: "2C", tglLahir: "06042018" },
+    { nama: "Azrina Zahra Putri Ardiyani", kelas: "2C", tglLahir: "30032018" },
+    { nama: "Brian Ramadhan Aditiyanto", kelas: "2C", tglLahir: "29052017" },
+    { nama: "Fabian Azka Atharizqy Pamungkas", kelas: "2C", tglLahir: "19042017" },
+    { nama: "Giandra Adyatama Susanto", kelas: "2C", tglLahir: "14042018" },
+    { nama: "Gibran Radhika Wiratama", kelas: "2C", tglLahir: "20062018" },
+    { nama: "Giovanni Kairan Abrisam", kelas: "2C", tglLahir: "07032018" },
+    { nama: "Ihda Aiyra Putrirazu", kelas: "2C", tglLahir: "14042018" },
+    { nama: "Javas Pandhega Mahfie", kelas: "2C", tglLahir: "29072018" },
+    { nama: "Kaivan Kamil Setyawijaya", kelas: "2C", tglLahir: "25032017" },
+    { nama: "Kautsar Nafi Al Qarni", kelas: "2C", tglLahir: "13012018" },
+    { nama: "Kayra Shahia Ananta", kelas: "2C", tglLahir: "12012018" },
+    { nama: "Mezzangga Amartya Atharani", kelas: "2C", tglLahir: "20102017" },
+    { nama: "Nuansayang Ada Karindha", kelas: "2C", tglLahir: "28042018" },
+    { nama: "Raden Bagus Rajasa Nurrayyan Fawwaz Ronaldo", kelas: "2C", tglLahir: "28042017" },
+    { nama: "Rafka Aryaputra", kelas: "2C", tglLahir: "19072017" },
+    { nama: "Rayyan Grafika Attaqi", kelas: "2C", tglLahir: "01092017" },
+    { nama: "Rr. Nayla Tribhuana Tunggadewi", kelas: "2C", tglLahir: "17092018" },
+    { nama: "Savaira Khairani Izzatuniswa", kelas: "2C", tglLahir: "11062017" }
+];
+// DATABASE SISWA KELAS 2D - SD TELADAN YOGYAKARTA
+const dataSiswa2D = [
+    { nama: "Adeeva Soca Kurniawan", kelas: "2D", tglLahir: "20022018" },
+    { nama: "Adreena Khanza Agmadina Mecca", kelas: "2D", tglLahir: "22102017" },
+    { nama: "Albifarzan Bima Hahijary", kelas: "2D", tglLahir: "24092017" },
+    { nama: "Almira Hilya Alfathunnisa", kelas: "2D", tglLahir: "09062017" },
+    { nama: "Arjuna Kenzo El Azzam", kelas: "2D", tglLahir: "10062017" },
+    { nama: "Azkia Soraya Azzahra", kelas: "2D", tglLahir: "22052018" },
+    { nama: "Azqiara Shaqeena Adisty", kelas: "2D", tglLahir: "24082017" },
+    { nama: "Bingar Samudra Sangkan Pawenang", kelas: "2D", tglLahir: "28062017" },
+    { nama: "Bramantya Anhar Danavendra", kelas: "2D", tglLahir: "06112017" },
+    { nama: "Febby Victoria", kelas: "2D", tglLahir: "10022017" },
+    { nama: "Gathan Devdaniyal Gunawan", kelas: "2D", tglLahir: "26032018" },
+    { nama: "Gifagan Rasendria Adnan", kelas: "2D", tglLahir: "16102017" },
+    { nama: "Haidar Fasha Arsyanendra", kelas: "2D", tglLahir: "21032018" },
+    { nama: "Hamizan Rafif Murwanto", kelas: "2D", tglLahir: "12112017" },
+    { nama: "Hanania Sahi Dhieayu", kelas: "2D", tglLahir: "18012018" },
+    { nama: "Kayyisa Anindita Maheswari", kelas: "2D", tglLahir: "02032018" },
+    { nama: "Keisyafa Arga Azzahra", kelas: "2D", tglLahir: "02072017" },
+    { nama: "Kunhiro Zain Mangkunegara Nasution", kelas: "2D", tglLahir: "10062018" },
+    { nama: "Muhammad Arzanka Alqahtani", kelas: "2D", tglLahir: "09092017" },
+    { nama: "Muhammad Faris Hazim Alghazali", kelas: "2D", tglLahir: "02042018" },
+    { nama: "Muhammad Naufal Ghifari Yahya", kelas: "2D", tglLahir: "10102017" },
+    { nama: "Rajasa Maheswara Nopa Putra", kelas: "2D", tglLahir: "06052018" },
+    { nama: "Razan Uwais Alvarendra", kelas: "2D", tglLahir: "19052017" },
+    { nama: "Rr. Zhafira Nidan Qinari", kelas: "2D", tglLahir: "26102017" },
+    { nama: "Runako Arsenio Tovani", kelas: "2D", tglLahir: "18042018" },
+    { nama: "Sabira Asheeqa Danurdara", kelas: "2D", tglLahir: "28022018" },
+    { nama: "Salsabila Delisha Putri", kelas: "2D", tglLahir: "14112017" },
+    { nama: "Upanarima", kelas: "2D", tglLahir: "18082017" }
+];
+// DATABASE SISWA KELAS 3A - SD TELADAN YOGYAKARTA
+const dataSiswa3A = [
+    { nama: "Adiba Ayunazahra Mahendra", kelas: "3A", tglLahir: "28062016" },
+    { nama: "Afthara Yodya Wishaka", kelas: "3A", tglLahir: "01082017" },
+    { nama: "Alesha Sofia Latif", kelas: "3A", tglLahir: "21062016" },
+    { nama: "Altaff Falah Hamizan Maasi", kelas: "3A", tglLahir: "22032017" },
+    { nama: "Alzia Anggun Putri Lesmana", kelas: "3A", tglLahir: "22122016" },
+    { nama: "Annisa Almahyra", kelas: "3A", tglLahir: "07052016" },
+    { nama: "Arsyila Jehan Naira", kelas: "3A", tglLahir: "17062017" },
+    { nama: "Arvino Muhammad Nazril Khalif", kelas: "3A", tglLahir: "09092016" },
+    { nama: "Attila Nadhif Iskandar", kelas: "3A", tglLahir: "18122015" },
+    { nama: "Azalea Najma Orlin", kelas: "3A", tglLahir: "08052016" },
+    { nama: "Barra Khalil Ayubi", kelas: "3A", tglLahir: "28102016" },
+    { nama: "Beenatya Adya Martanta", kelas: "3A", tglLahir: "17022017" },
+    { nama: "Cataluna Kinarian Bandriananto", kelas: "3A", tglLahir: "24052017" },
+    { nama: "Efwan Raffaza Abidzar", kelas: "3A", tglLahir: "09022017" },
+    { nama: "Farid Abdillah Anindito", kelas: "3A", tglLahir: "24112016" },
+    { nama: "Fatan Divo Laranta", kelas: "3A", tglLahir: "16022017" },
+    { nama: "Ghassani Swarnanindya Riawan", kelas: "3A", tglLahir: "01072016" },
+    { nama: "Kahiyang Arsyfa Putri", kelas: "3A", tglLahir: "25102016" },
+    { nama: "Kieran Sabiraliana Gazala", kelas: "3A", tglLahir: "27022017" },
+    { nama: "Myesha Afsheen Adeeva", kelas: "3A", tglLahir: "21012017" },
+    { nama: "Nurani Merah Merona", kelas: "3A", tglLahir: "15112016" },
+    { nama: "Paundrakarna Adrian", kelas: "3A", tglLahir: "10032017" },
+    { nama: "R. Danish Satya Kumarajendra", kelas: "3A", tglLahir: "07022016" },
+    { nama: "Restina Hayyu Kinanti", kelas: "3A", tglLahir: "21062017" },
+    { nama: "Reynand Gama Alkanzu", kelas: "3A", tglLahir: "03032016" },
+    { nama: "Shafaluna Fidelya Hoshi", kelas: "3A", tglLahir: "11052017" },
+    { nama: "Yusuf Haidar Fadil Pratama", kelas: "3A", tglLahir: "19042016" }
+];
+// DATABASE SISWA KELAS 3B - SD TELADAN YOGYAKARTA
+const dataSiswa3B = [
+    { nama: "Abrisam Reynand Alvarendra", kelas: "3B", tglLahir: "12062016" },
+    { nama: "Adam Zaid Mahesvara", kelas: "3B", tglLahir: "12072017" },
+    { nama: "Adiratna Kinasih Priscanara", kelas: "3B", tglLahir: "05012018" },
+    { nama: "Aghnia Zuhrufa Aulia", kelas: "3B", tglLahir: "31072017" },
+    { nama: "Al Meera Shahin Ashalina", kelas: "3B", tglLahir: "31032017" },
+    { nama: "Almir Razka Alvaronizam", kelas: "3B", tglLahir: "06102016" },
+    { nama: "Almira Jeslyn Chalondra", kelas: "3B", tglLahir: "04092016" },
+    { nama: "Aretha Naufa Kartika", kelas: "3B", tglLahir: "16092016" },
+    { nama: "Arkana Rafasyaa Darmawan", kelas: "3B", tglLahir: "10092016" },
+    { nama: "Arsaka Alindra Pratama", kelas: "3B", tglLahir: "03112017" },
+    { nama: "Arsya Jivi Damario", kelas: "3B", tglLahir: "28122016" },
+    { nama: "Atqiya Ashalina Iskandar Alam", kelas: "3B", tglLahir: "25012017" },
+    { nama: "Axelle Alatas Bintang Kusuma", kelas: "3B", tglLahir: "05062017" },
+    { nama: "Azlan Hamka Wijaya", kelas: "3B", tglLahir: "22042017" },
+    { nama: "Azzalea Zalfa Humaira", kelas: "3B", tglLahir: "17072016" },
+    { nama: "Ben Khalid Ayubi", kelas: "3B", tglLahir: "28102016" },
+    { nama: "Devendra Farzana Ariqin", kelas: "3B", tglLahir: "26112016" },
+    { nama: "Dzakiyah Shafaraz Prasetyo", kelas: "3B", tglLahir: "10062016" },
+    { nama: "Ghalibi Sandiaga Riawan", kelas: "3B", tglLahir: "01072016" },
+    { nama: "Kyna Mecca Avicenna", kelas: "3B", tglLahir: "29112016" },
+    { nama: "Medina Nameera Aji Queendra", kelas: "3B", tglLahir: "24102016" },
+    { nama: "Mehdi Arafat", kelas: "3B", tglLahir: "10102016" },
+    { nama: "Muhammad Wahyu Abidzar", kelas: "3B", tglLahir: "05092016" },
+    { nama: "Nafia Nuha Yudhanto", kelas: "3B", tglLahir: "16092016" },
+    { nama: "Olivia Aleshaeda Istiawan", kelas: "3B", tglLahir: "17032017" },
+    { nama: "Rama Najid Abdillah Munandar", kelas: "3B", tglLahir: "12112016" },
+    { nama: "Syadid Alrafaeyza Ahmadi", kelas: "3B", tglLahir: "22092016" },
+    { nama: "Syah Fareeza Nabila Ramadani", kelas: "3B", tglLahir: "22062016" }
+];
+// DATABASE SISWA KELAS 3C - SD TELADAN YOGYAKARTA
+const dataSiswa3C = [
+    { nama: "Al Kahfi Hadianto", kelas: "3C", tglLahir: "01032017" },
+    { nama: "Alyssa Azzahra", kelas: "3C", tglLahir: "04112016" },
+    { nama: "Ardana Kaelan Albar", kelas: "3C", tglLahir: "12082016" },
+    { nama: "Arsakha Muhammad Adrian", kelas: "3C", tglLahir: "31122016" },
+    { nama: "Azni Azarine", kelas: "3C", tglLahir: "03092016" },
+    { nama: "Bagus Ghani Pradana", kelas: "3C", tglLahir: "24032017" },
+    { nama: "Cakrawala Putera Sanjaya", kelas: "3C", tglLahir: "16072016" },
+    { nama: "Daffa Abhimata Khatulistiwa", kelas: "3C", tglLahir: "10032016" },
+    { nama: "Den Bagus Asta Maheswara", kelas: "3C", tglLahir: "04082016" },
+    { nama: "Elvina Arsyfa Salsabila", kelas: "3C", tglLahir: "30122015" },
+    { nama: "Faza Ahmad Alfarizqi", kelas: "3C", tglLahir: "11072016" },
+    { nama: "Hanief Habibie Oktadio", kelas: "3C", tglLahir: "14102016" },
+    { nama: "Hilmi Ammar Ahmad", kelas: "3C", tglLahir: "09072016" },
+    { nama: "Jasmine Salsabila Chairunnisa", kelas: "3C", tglLahir: "08102017" },
+    { nama: "Keysha Arindra Ramadhani", kelas: "3C", tglLahir: "30062016" },
+    { nama: "Kyna Medina Arscylla", kelas: "3C", tglLahir: "29062016" },
+    { nama: "Muhammad Dzaky Yudistira", kelas: "3C", tglLahir: "25102016" },
+    { nama: "Muhammad Naufal Nur Rasyid", kelas: "3C", tglLahir: "12032017" },
+    { nama: "Nadine Zivana Prabowo", kelas: "3C", tglLahir: "01042017" },
+    { nama: "Nadria Kinandari Adia", kelas: "3C", tglLahir: "18042016" },
+    { nama: "Nafasya Ashima Radisty", kelas: "3C", tglLahir: "11112016" },
+    { nama: "Nouman Alaric Rausyanfikri Witoyo", kelas: "3C", tglLahir: "30122016" },
+    { nama: "R. Ismail Hidayatullah", kelas: "3C", tglLahir: "15082016" },
+    { nama: "Radika Rafi Radiaskoro", kelas: "3C", tglLahir: "15042016" },
+    { nama: "Rafasha Shidiq Alfarih", kelas: "3C", tglLahir: "29112016" },
+    { nama: "Rania Nindita Pangaribowo", kelas: "3C", tglLahir: "25022017" },
+    { nama: "Tisya Dea Ashalina", kelas: "3C", tglLahir: "14112016" },
+    { nama: "Yasmeena Shaqueena Alesha", kelas: "3C", tglLahir: "09032017" }
+];
+// DATABASE SISWA KELAS 3D - SD TELADAN YOGYAKARTA
+const dataSiswa3D = [
+    { nama: "Aldhino Alfarizki Diody", kelas: "3D", tglLahir: "22112016" },
+    { nama: "Alveno Azzam Jatmiko", kelas: "3D", tglLahir: "05092016" },
+    { nama: "Ardhana Rakha Dhanurendra", kelas: "3D", tglLahir: "08012017" },
+    { nama: "Arsakha Virendra Pratama", kelas: "3D", tglLahir: "27052016" },
+    { nama: "Arvand Hanenda Detama", kelas: "3D", tglLahir: "07052016" },
+    { nama: "Fahiera Salsabila Chairunnisa", kelas: "3D", tglLahir: "08102017" },
+    { nama: "Fazyan Abyaz Arsen", kelas: "3D", tglLahir: "27012017" },
+    { nama: "Hafidz Orlando Akbar", kelas: "3D", tglLahir: "17112015" },
+    { nama: "Hazira Sauqiya", kelas: "3D", tglLahir: "23012016" },
+    { nama: "Inara Ashalina Anindri", kelas: "3D", tglLahir: "23112016" },
+    { nama: "Karima Nismara Pratama", kelas: "3D", tglLahir: "13052017" },
+    { nama: "Kekira Athaleta Almeera", kelas: "3D", tglLahir: "01022017" },
+    { nama: "Ken Luthra Padmanggala", kelas: "3D", tglLahir: "04052017" },
+    { nama: "Keyan Amar Ruqee", kelas: "3D", tglLahir: "17052016" },
+    { nama: "Luna Mikayla Kusuma", kelas: "3D", tglLahir: "12042017" },
+    { nama: "Mikayla Keysha Syaquila Wibowo", kelas: "3D", tglLahir: "07062016" },
+    { nama: "Misha Chairunnisa", kelas: "3D", tglLahir: "22072016" },
+    { nama: "Muhammad Dirgantara Alnandi Putra", kelas: "3D", tglLahir: "06022016" },
+    { nama: "Muhammad Harun Al Rasyid", kelas: "3D", tglLahir: "17082016" },
+    { nama: "Muhammad Irfan Fatahillah Azzikri", kelas: "3D", tglLahir: "06022017" },
+    { nama: "Muhammad Sultan Hafiz", kelas: "3D", tglLahir: "24122015" },
+    { nama: "Nabila Putri", kelas: "3D", tglLahir: "21112016" },
+    { nama: "Nada Farhana Zayn", kelas: "3D", tglLahir: "15032017" },
+    { nama: "R. Zaid Zeyzan Ombara Nahdi", kelas: "3D", tglLahir: "14102016" },
+    { nama: "Raden Ajeng Amira Sophia", kelas: "3D", tglLahir: "21052016" },
+    { nama: "Raisya Almahyra Hanifa", kelas: "3D", tglLahir: "26012017" },
+    { nama: "Zalfa Naqiyya Mecca", kelas: "3D", tglLahir: "16042016" }
+];
+
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa3D);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa3C);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa3B);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa3A);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa2D);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa2C);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa2B);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa2A);
+// Gabungkan ke database utama
+dataSiswa.push(...dataSiswa1D);
+// Masukkan data kelas 1C ke database utama
+dataSiswa.push(...dataSiswa1C);
+// Gabungkan data kelas 1A dan 1B ke dalam dataSiswa utama
+dataSiswa.push(...dataSiswa1B);
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            
+            const inputNama = document.getElementById('namaSiswa').value;
+            const inputPass = document.getElementById('passSiswa').value;
+
+            // Cari siswa di database
+            const siswa = dataSiswa.find(s => 
+                s.nama.toLowerCase() === inputNama.toLowerCase() && 
+                s.tglLahir === inputPass
+            );
+
+            if (siswa) {
+                // SIMPAN DATA LOGIN
+                const userLogin = {
+                    nama: siswa.nama,
+                    kelas: siswa.kelas
+                };
+                sessionStorage.setItem('userLogin', JSON.stringify(userLogin));
+
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Selamat datang, wali dari ' + siswa.nama,
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: '#0f172a',
+                    color: '#fff'
+                }).then(() => {
+                    window.location.href = 'dashboard_wali.html';
+                });
+            } else {
+                Swal.fire({
+                    title: 'Gagal Login!',
+                    text: 'Nama atau Tanggal Lahir salah. Pastikan format DDMMYYYY.',
+                    icon: 'error',
+                    background: '#0f172a',
+                    color: '#fff'
+                });
+            }
+        };
+        function togglePassword() {
+    const passwordInput = document.getElementById('passSiswa');
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+    }
+}
+    </script>
+</body>
+</html>

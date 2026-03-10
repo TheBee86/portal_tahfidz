@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Guru - SD Teladan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Animasi muncul halus untuk seluruh halaman */
+        .fade-in-page {
+            animation: fadeIn 1.2s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(1.02); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Memastikan background tidak kaget saat muncul */
+        .bg-smooth {
+            transition: background-image 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center p-4 bg-smooth" 
+      style="background-image: url('bg_login_guru.jpg');">
+    
+    <div class="absolute inset-0 bg-black/60 z-0 transition-opacity duration-700"></div>
+
+    <div class="fade-in-page relative z-10 w-[90%] md:w-full md:max-w-md bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-2xl border border-white/20">
+        
+        <div class="text-center mb-8">
+            <div class="text-5xl mb-4">🔐</div>
+            <h2 class="text-3xl font-bold text-white">Login Guru</h2>
+            <p class="text-white/80 mt-2">SD Teladan Yogyakarta</p>
+        </div>
+
+        <div class="bg-yellow-400/20 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+            <p class="text-yellow-100 text-sm leading-relaxed">
+                <strong>Petunjuk:</strong><br>
+                • Gunakan nama panggilan (Contoh: <b>Pak Tebe</b>)<br>
+                • Password: <b>6 digit terakhir NIY</b>
+            </p>
+        </div>
+
+        <form id="loginForm" class="space-y-5 relative z-10">
+            <div>
+                <label class="block text-white text-sm font-medium mb-2 text-left">Nama Panggilan</label>
+                <input type="text" id="username" placeholder="Masukkan nama panggilan..." 
+                    class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+            </div>
+
+            <div>
+                <label class="block text-white text-sm font-medium mb-2 text-left">Password (6 Digit Terakhir NIY)</label>
+                <input type="password" id="password" placeholder="******" 
+                    class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-95">
+                Masuk Sekarang
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <a href="index.html" class="text-white/40 hover:text-white text-[10px] tracking-widest uppercase transition-colors">
+                ← Kembali ke Halaman Utama
+            </a>
+            <p class="mt-4 text-white/30 text-[9px] tracking-widest uppercase">
+                &copy; 2026 TB Azmi Umar Fauzi
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Memastikan gambar background termuat sebelum menampilkan konten secara penuh
+        window.addEventListener('load', function() {
+            document.body.classList.add('fade-in-page');
+        });
+    </script>
+
+<script>
+    // DATABASE GURU SD TELADAN YOGYAKARTA
+    const dataGuru = [
+        { nama: "Pak Tebe", niy: "020694" },
+        { nama: "Pak Yusuf", niy: "040393" },
+        { nama: "Bu Arrum", niy: "280700" },
+        { nama: "Pak Irhas", niy: "100801" },
+        { nama: "Bu Acha", niy: "110499" },
+        { nama: "Pak Adieb", niy: "140491" },
+        { nama: "Bu Rifa", niy: "030198" },
+        { nama: "Pak Annas", niy: "260797" },
+        { nama: "Bu Mela", niy: "220896" },
+        { nama: "Bu Ina", niy: "070593" },
+        { nama: "Pak Hilmi", niy: "020493" },
+        { nama: "Pak Oky", niy: "121096" }
+    ];
+
+    const loginForm = document.getElementById('loginForm');
+
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const inputNama = document.getElementById('username').value.trim();
+        const inputPass = document.getElementById('password').value.trim();
+
+        // Cari guru di dalam daftar (mengabaikan huruf besar/kecil)
+        const guru = dataGuru.find(g => 
+            g.nama.toLowerCase() === inputNama.toLowerCase() && 
+            g.niy === inputPass
+        );
+
+        if (guru) {
+            // NOTIFIKASI BERHASIL
+            Swal.fire({
+                title: 'AHLAN WA SAHLAN!',
+                text: `USTADZ/USTADZAH ${guru.nama.toUpperCase()}... SELAMAT BERTUGAS!`,
+                icon: 'success',
+                confirmButtonColor: '#16a34a',
+                confirmButtonText: 'Mulai Tugas'
+            }).then(() => {
+                // Pindah ke Dashboard Guru
+                window.location.href = "dashboard_guru.html"; 
+            });
+        } else {
+            // NOTIFIKASI GAGAL (Teks Sesuai Permintaan Anda)
+            Swal.fire({
+                title: 'ANDA SIAPA? 😜',
+                text: 'NAMA ATAU NIY SALAH!',
+                icon: 'error',
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'Coba Lagi'
+            });
+        }
+    });
+</script>
+</body>
+</html>
